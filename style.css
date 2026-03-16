@@ -19,6 +19,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    cursor: none !important;
 }
 
 body {
@@ -203,6 +204,7 @@ p {
     text-decoration: none;
     font-size: 0.9rem;
     transition: 0.3s;
+    cursor: none !important;
 }
 
 .btn-primary {
@@ -273,28 +275,36 @@ p {
    ========================================= */
 .views-counter {
     position: fixed;
-    top: 20px; /* Float it at the top most center */
+    top: 20px;
+    /* Float it at the top most center */
     left: 50%;
-    transform: translateX(-50%); /* Centers perfectly horizontally */
+    transform: translateX(-50%);
+    /* Centers perfectly horizontally */
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 6px 16px; /* Adjusted padding to fit icon and number well */
-    background: rgba(46, 255, 116, 0.1); /* Green base */
+    padding: 6px 16px;
+    /* Adjusted padding to fit icon and number well */
+    background: rgba(46, 255, 116, 0.1);
+    /* Green base */
     border: 1px solid rgba(46, 255, 116, 0.3);
-    border-radius: 50px; /* Make it a perfectly rounded pill */
-    color: #2eff74; /* Glowing green */
+    border-radius: 50px;
+    /* Make it a perfectly rounded pill */
+    color: #2eff74;
+    /* Glowing green */
     font-family: var(--font-heading);
     font-size: 0.95rem;
     font-weight: 700;
     transition: all 0.3s ease;
     backdrop-filter: blur(8px);
-    box-shadow: 0 0 15px rgba(46, 255, 116, 0.15) inset; /* Inner glow for glass look */
-    
+    box-shadow: 0 0 15px rgba(46, 255, 116, 0.15) inset;
+    /* Inner glow for glass look */
+
     /* For the radar sweep */
     overflow: hidden;
-    z-index: 1000; /* Ensure it stays above all other content */
-    
+    z-index: 1000;
+    /* Ensure it stays above all other content */
+
     /* #4: Pulsating outer glow on load */
     animation: loadHeartbeat 1.5s ease-out 1;
 }
@@ -318,12 +328,15 @@ p {
     0% {
         box-shadow: 0 0 0 0 rgba(46, 255, 116, 0.6), 0 0 15px rgba(46, 255, 116, 0.1) inset;
     }
+
     30% {
         box-shadow: 0 0 0 15px rgba(46, 255, 116, 0), 0 0 15px rgba(46, 255, 116, 0.1) inset;
     }
+
     45% {
         box-shadow: 0 0 0 0 rgba(46, 255, 116, 0.4), 0 0 15px rgba(46, 255, 116, 0.1) inset;
     }
+
     100% {
         box-shadow: 0 0 0 15px rgba(46, 255, 116, 0), 0 0 15px rgba(46, 255, 116, 0.1) inset;
     }
@@ -354,10 +367,13 @@ p {
 }
 
 @keyframes eyePulse {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: scale(0.8);
         opacity: 0.7;
     }
+
     50% {
         transform: scale(1.1);
         opacity: 1;
@@ -369,7 +385,8 @@ p {
     background: rgba(46, 255, 116, 0.1);
     border-color: rgba(46, 255, 116, 0.4);
     color: #ffffff;
-    transform: translateX(-50%) translateY(-2px); /* Regular hover lift */
+    transform: translateX(-50%) translateY(-2px);
+    /* Regular hover lift */
     box-shadow: 0 5px 15px rgba(46, 255, 116, 0.2), 0 0 20px rgba(46, 255, 116, 0.2) inset;
 }
 
@@ -402,7 +419,7 @@ p {
     border: 1px solid rgba(0, 168, 204, 0.3);
     box-shadow: 0 0 10px rgba(0, 168, 204, 0.1);
     transition: all 0.3s ease;
-    cursor: default;
+    cursor: none;
 }
 
 .pfolio-logo::before {
@@ -788,7 +805,7 @@ p {
     padding: 1rem;
     transition: all 0.3s ease;
     position: relative;
-    cursor: pointer;
+    cursor: none;
     overflow: hidden;
 }
 
@@ -941,7 +958,7 @@ p {
     margin-bottom: 0.5rem;
     position: relative;
     display: inline-block;
-    cursor: help;
+    cursor: none;
 }
 
 .project-tag::after {

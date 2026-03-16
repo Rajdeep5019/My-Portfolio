@@ -1,11 +1,15 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Custom Cursor Logic
+    // 1. Custom Cursor Logic (Refined & Smoothed)
     const cursorDot = document.querySelector('.cursor-dot');
     const cursorOutline = document.querySelector('.cursor-outline');
 
-    let mouseX = 0;
-    let mouseY = 0;
+    let mouseX = 0, mouseY = 0;
+    let dotX = 0, dotY = 0;
     let outlineX = 0, outlineY = 0;
+
+    // Smooth movement factors (0-1: higher is faster/more reactive)
+    const dotSmoothing = 0.35; 
+    const outlineSmoothing = 0.12;
 
     // Particle Trail System
     let particleCount = 0;
@@ -28,30 +32,36 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 800);
     }
 
-    if (cursorDot && cursorOutline) {
-        window.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
+    window.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
 
-            cursorDot.style.left = `${mouseX}px`;
-            cursorDot.style.top = `${mouseY}px`;
+        // Create particle trail immediately on mouse move
+        createParticle(mouseX, mouseY);
+    });
 
-            // Create particle trail
-            createParticle(e.clientX, e.clientY);
-        });
-
-        // Smooth cursor outline animation
-        function animateOutline() {
-            outlineX += (mouseX - outlineX) * 0.15;
-            outlineY += (mouseY - outlineY) * 0.15;
-
-            cursorOutline.style.left = outlineX + 'px';
-            cursorOutline.style.top = outlineY + 'px';
-
-            requestAnimationFrame(animateOutline);
+    // Unified Smooth Animation Loop
+    function animateCursors() {
+        // Linear Interpolation (LERP) for both dot and circle
+        if (cursorDot) {
+            dotX += (mouseX - dotX) * dotSmoothing;
+            dotY += (mouseY - dotY) * dotSmoothing;
+            cursorDot.style.left = `${dotX}px`;
+            cursorDot.style.top = `${dotY}px`;
         }
-        animateOutline();
+
+        if (cursorOutline) {
+            outlineX += (mouseX - outlineX) * outlineSmoothing;
+            outlineY += (mouseY - outlineY) * outlineSmoothing;
+            cursorOutline.style.left = `${outlineX}px`;
+            cursorOutline.style.top = `${outlineY}px`;
+        }
+
+        requestAnimationFrame(animateCursors);
     }
+
+    // Initialize animation loop
+    animateCursors();
 
     // 2. Staggered Animation for Tiles
     const tiles = document.querySelectorAll('.bento-tile');
@@ -65,8 +75,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // 3. Project Card Click Handlers
     const projectCards = document.querySelectorAll('.project-card');
     projectCards.forEach(card => {
-        card.style.cursor = 'pointer';
-
         card.addEventListener('click', (e) => {
             // Don't trigger if user clicked on a link directly
             if (e.target.tagName === 'A') return;
@@ -239,50 +247,43 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(triggerScramble, 800);
     }
 
-    // 6. LocalStorage View Counter
+    // 6. Global View Counter (All Users + Every Reload)
     const viewCountElement = document.getElementById('view-count');
     if (viewCountElement) {
-        // Get current views from localStorage, default to 0 if not set
-        let currentViews = localStorage.getItem('portfolioViews');
-        
-        if (!currentViews) {
-            currentViews = 0;
-        } else {
-            currentViews = parseInt(currentViews);
-        }
-        
-        // Increment views
-        currentViews += 1;
-        
-        // Save back to localStorage
-        localStorage.setItem('portfolioViews', currentViews);
-        
-        // Update the DOM
-        // #2: Odometer number counting up effect
-        const duration = 1500; // 1.5 seconds duration
-        const target = currentViews;
-        let startTimestamp = null;
+        viewCountElement.innerText = "---"; 
 
-        const animateOdometer = (timestamp) => {
-            if (!startTimestamp) startTimestamp = timestamp;
-            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-            
-            // EaseOut cubic for smooth slowdown at the end
-            const easeProgress = 1 - Math.pow(1 - progress, 3);
-            const currentObj = Math.floor(easeProgress * target);
-            
-            viewCountElement.innerText = currentObj.toLocaleString();
-            
-            if (progress < 1) {
-                window.requestAnimationFrame(animateOdometer);
-            } else {
-                viewCountElement.innerText = target.toLocaleString(); // Ensure it ends exactly on target
-            }
-        };
+        const namespace = 'hrituraj-final-global';
+        const key = 'visit-count';
 
-        // Start animation with a slight delay so user can see it load
-        setTimeout(() => {
-            window.requestAnimationFrame(animateOdometer);
-        }, 500);
+        // Increment globally on every reload
+        fetch(`https://api.counterapi.dev/v1/${namespace}/${key}/up?t=${Date.now()}`)
+            .then(res => res.json())
+            .then(data => {
+                const globalCount = data.count || 0;
+                
+                // Odometer Animation
+                const duration = 2000;
+                let startTimestamp = null;
+
+                const animate = (timestamp) => {
+                    if (!startTimestamp) startTimestamp = timestamp;
+                    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                    const eased = 1 - Math.pow(1 - progress, 4);
+                    const current = Math.floor(eased * globalCount);
+                    viewCountElement.innerText = current.toLocaleString();
+                    
+                    if (progress < 1) requestAnimationFrame(animate);
+                    else viewCountElement.innerText = globalCount.toLocaleString();
+                };
+                setTimeout(() => requestAnimationFrame(animate), 300);
+            })
+            .catch(err => {
+                console.error('Global Counter Error:', err);
+                // Fallback to local if API is blocked by user's network
+                let fallback = parseInt(localStorage.getItem('pfolio_v3_fallback') || "0") + 1;
+                localStorage.setItem('pfolio_v3_fallback', fallback);
+                viewCountElement.innerText = fallback.toLocaleString();
+                viewCountElement.style.opacity = "0.7"; 
+            });
     }
 });
